@@ -18,8 +18,8 @@ class HISTORICALDATA:
         return stock_name
     def getDataDF(self) -> DataFrame:
         return data.DataReader(name=self.stock_name, data_source=self.data_source, start=self.full_start_date, end=self.end_date, api_key=self.api_key)
-    
+
 if __name__ =="__main__":
-    HISTORICALDATA = HISTORICALDATA("AAL")
+    HISTORICALDATA = HISTORICALDATA("COMP")
     df= HISTORICALDATA.getDataDF()
-    df.to_csv("/Users/floraqian/Downloads/AALtest.csv")
+    df.to_csv("/Users/floraqian/Downloads/IXICtest.csv")

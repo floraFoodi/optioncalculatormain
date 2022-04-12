@@ -5,23 +5,27 @@ import pandas as pd
 from optionData import OptionData
 from rsiData import RSIData
 from historicalData import HISTORICALDATA
+from news import News
+
+
+
 def getBaseParams(sheet):
     return sheet.range('A2:E2').value
     
 def getParmsDf(sheet,n):
-    rng = sheet.range((4, 5+7*n),(5, 9+7*n))
+    rng = sheet.range((4, 6+7*n),(5, 10+7*n))
     return rng.options(pd.DataFrame, header=1).value
 
 def writeOptions(sheet, n, df):
     clearForm(sheet, n)
-    sheet.range((8, 5+(n*7))).options(index=False).value = df
+    sheet.range((8, 6+(n*7))).options(index=False).value = df
 
 def writeRSI(sheet, df):
     sheet.range((8,1)).expand().clear_contents()
     sheet.range((8, 1)).options(index=False).value = df
 def clearForm(sheet, n):
     # print('clearing form')
-    sheet.range((8, 5+(n*7))).expand().clear_contents()
+    sheet.range((8, 6+(n*7))).expand().clear_contents()
     
 def populateOption(sheet, n, baseParams):
     (spotPrice, closePrice, up, down, numberOfOptions) = baseParams
@@ -45,6 +49,15 @@ def populateRSI(sheet, df, baseParams):
     df = rsiData.getCalculatedRSI()
     # print(df)
     writeRSI(sheet, df)
+def writeNews(sheet,df):
+    sheet.range((50,1)).expand().clear_contents()
+    sheet.range((50,1)).options(index=False).value = df
+
+def populateNews(sheet, ticker, period=1):
+    news = News(ticker, period)
+    df = news.getNews()
+    writeNews(sheet,df)
+
 def main():
     #Read Excel Book  
     wb = xw.Book.caller()
@@ -65,6 +78,7 @@ def main():
                 baseParams = getBaseParams(sheet)
                 numberOfOptions = int(baseParams[4])
                 populateRSI(sheet,historicalDf, baseParams)
+                populateNews(sheet,T)
                 print(numberOfOptions)
                 for n in range(numberOfOptions):
                     print("option choice ",n)

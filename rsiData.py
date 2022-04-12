@@ -19,21 +19,23 @@ class RSIData:
         # print(df.iloc[-5])
         return df
 
-    def getLastRSI(self, df):
-        return RSICALCULATOR(df).rsi().iloc[-1].item()
+    def getLastRSI(self, df, period=3):
+        return RSICALCULATOR(df,period).rsi().iloc[-1].item()
 
     def getCalculatedRSI(self):
-        rsiDf = pd.DataFrame(columns=['percentage', 'price','rsi'])
+        rsiDf = pd.DataFrame(columns=['percentage', 'price','rsi3','rsi14'])
         spotPercentage = (self.S - self.close_price)/self.close_price * 100
         spotDf = self.updateDataframe(self.S)
-        spotRSI = self.getLastRSI(spotDf)
-        rsiDf = rsiDf.append({'percentage': round(spotPercentage, 2), 'price':round(self.S, 2), 'rsi': round(spotRSI,2)}, ignore_index=True)
+        spotRSI3 = self.getLastRSI(spotDf)
+        spotRSI14 = self.getLastRSI(spotDf, 14)
+        rsiDf = rsiDf.append({'percentage': round(spotPercentage, 2), 'price':round(self.S, 2), 'rsi3': round(spotRSI3,2), 'rsi14': round(spotRSI14,2)}, ignore_index=True)
         spotPriceDf = self.getSpotPrice()
         # print(spotPriceDf)
         for (S,P) in spotPriceDf.values:
             updatedDf = self.updateDataframe(S)
-            calculatedRSI = self.getLastRSI(updatedDf)
-            rsiDf = rsiDf.append({'percentage': round(P, 2), 'price':round(S, 2), 'rsi': round(calculatedRSI,2)}, ignore_index=True)
+            calculatedRSI3 = self.getLastRSI(updatedDf)
+            calculatedRSI14 = self.getLastRSI(updatedDf, 14)
+            rsiDf = rsiDf.append({'percentage': round(P, 2), 'price':round(S, 2), 'rsi3': round(calculatedRSI3,2), 'rsi14': round(calculatedRSI14, 2)}, ignore_index=True)
         return rsiDf
 
 if __name__ == "__main__":
