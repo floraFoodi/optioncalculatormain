@@ -4,17 +4,17 @@ import pandas as pd
 from optionCalculator import OptionCalculator
 from spotPriceUtil import getSpotPriceUtil
 class OptionData:
-    def __init__(self, close_price, spot_price,strike_price, days_to_experiation, risk_free_rate=5.5, volatility=80, up = 5, down = -5, percentage_step = 0.5 ) -> None:
-        self.close_price = close_price
+    def __init__(self, spot_price, target_price, stop_price, atr,strike_price, days_to_experiation, risk_free_rate=5.5, volatility=80, number_of_steps = 5 ) -> None:
+        self.target_price = target_price
         self.S = spot_price
         self.K = strike_price
         self.T = days_to_experiation
         self.r = risk_free_rate
         self.sigma = volatility
-        self.up = up
-        self.down = down
-        self.percentage_step = percentage_step
-        self.current_pct = (self.S - self.close_price)/self.close_price * 100
+        self.stop_price = stop_price
+        self.atr = atr
+        self.number_of_steps = number_of_steps
+        self.current_pct = 0
     
     # def getSpotPirce(self):
     #     number_of_spots = int((self.up - self.down)/self.percentage_step)
@@ -31,10 +31,11 @@ class OptionData:
     #     return spotPriceDf
 
     def getSpotPrice(self):
-        return getSpotPriceUtil(self.close_price, self.up, self.down, self.percentage_step)
+        return getSpotPriceUtil(self.S, self.target_price, self.stop_price, self.atr, self.number_of_steps)
         
     def getOptionPrices(self):
         spotPriceDf = self.getSpotPrice()
+        print(spotPriceDf)
         optionPriceDf = pd.DataFrame(columns=['percentage', 'price','call', 'put', 'call pct change', 'put pct change'])
         spotOptionCalculator = OptionCalculator(self.S, self.K, self.T, self.r, self.sigma)
         spotCallPrice = spotOptionCalculator.bs_call()
@@ -51,12 +52,15 @@ class OptionData:
 
 if __name__ == "__main__":
     starttime=datetime.now()
-    stock_price = 20.94
+    spot_price = 20.94
+    target_price = 23
+    stop_price = 20
+    atr = 0.5
     strike_price = 21
     date_to_expiration = 7
     risk_free_rate = 5.5
     volatility = 57.6
-    optionData = OptionData(stock_price+1,stock_price,strike_price, date_to_expiration, risk_free_rate, volatility)
+    optionData = OptionData(spot_price=spot_price, target_price=target_price, stop_price=stop_price, atr=atr, strike_price=strike_price, days_to_experiation=date_to_expiration, risk_free_rate=risk_free_rate, volatility=volatility)
     spotPriceDf = optionData.getSpotPrice()
     # print(spotPriceDf)
     optionPriceDf = optionData.getOptionPrices()

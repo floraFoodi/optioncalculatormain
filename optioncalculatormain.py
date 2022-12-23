@@ -28,7 +28,7 @@ def clearForm(sheet, n):
     sheet.range((8, 6+(n*7))).expand().clear_contents()
     
 def populateOption(sheet, n, baseParams):
-    (spotPrice, closePrice, up, down, numberOfOptions) = baseParams
+    (spotPrice, targetPrice, stopPrice, atr, numberOfOptions) = baseParams
     params = getParmsDf(sheet,n).values
     # print(params)
     strikePrice = params[0,0]
@@ -37,9 +37,10 @@ def populateOption(sheet, n, baseParams):
     riskFreeRate = params[0,3]
     # print(spotPrice, closePrice, up, down, strikePrice, expirationDays, volatility, riskFreeRate)
     if riskFreeRate is not None:
-        optionData = OptionData(close_price=closePrice, spot_price=spotPrice, strike_price=strikePrice, days_to_experiation=expirationDays, risk_free_rate=riskFreeRate, volatility=volatility, up=up, down=down)
+        optionData = OptionData(spot_price=spotPrice, target_price=targetPrice, stop_price=stopPrice, atr=atr,strike_price=strikePrice, days_to_experiation=expirationDays, risk_free_rate=riskFreeRate, volatility=volatility)
     else:
-        optionData = OptionData(close_price=closePrice, spot_price=spotPrice, strike_price=strikePrice, days_to_experiation=expirationDays, volatility=volatility, up=up, down=down)
+        # optionData = OptionData(target_price=targetPrice, spot_price=spotPrice, strike_price=strikePrice, days_to_experiation=expirationDays, volatility=volatility, stop_price=stopPrice, atr=atr)
+        optionData = OptionData(spot_price=spotPrice, target_price=targetPrice, stop_price=stopPrice, atr=atr,strike_price=strikePrice, days_to_experiation=expirationDays, volatility=volatility)
     optionDf = optionData.getOptionPrices()
     # print(optionDf)
     writeOptions(sheet, n, optionDf)
@@ -73,12 +74,12 @@ def main():
             if update == 1:
                 historicalDf = HISTORICALDATA(T).getDataDF()
                 #write the last value of the historical data to ensure this number is the same as close price
-                sheet.range((4,2)).value="RSI last price"
-                sheet.range((5,2)).value=historicalDf.iloc[-1, historicalDf.columns.get_loc('adjClose')]
+                # sheet.range((4,2)).value="RSI last price"
+                # sheet.range((5,2)).value=historicalDf.iloc[-1, historicalDf.columns.get_loc('adjClose')]
                 baseParams = getBaseParams(sheet)
                 numberOfOptions = int(baseParams[4])
-                populateRSI(sheet,historicalDf, baseParams)
-                populateNews(sheet,T)
+                # populateRSI(sheet,historicalDf, baseParams)
+                # populateNews(sheet,T)
                 print(numberOfOptions)
                 for n in range(numberOfOptions):
                     print("option choice ",n)
