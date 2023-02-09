@@ -29,6 +29,6 @@ def getSpotPriceUtil(spot_price, target_price, stop_price, atr, number_of_steps 
         spot_price_calc = upperSpotPrice - n * atr
         percentage = ((spot_price_calc - spot_price)/spot_price)*100
         # print('percent ', percentage)
-        print(n, spot_price_calc)
+        # prin(n, spot_price_calc)
         spotPriceDf = spotPriceDf.append({'spot price':spot_price_calc, 'percentage change':percentage}, ignore_index = True)
     return spotPriceDf

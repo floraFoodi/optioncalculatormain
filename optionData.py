@@ -4,7 +4,7 @@ import pandas as pd
 from optionCalculator import OptionCalculator
 from spotPriceUtil import getSpotPriceUtil
 class OptionData:
-    def __init__(self, spot_price, target_price, stop_price, atr,strike_price, days_to_experiation, risk_free_rate=5.5, volatility=80, number_of_steps = 5 ) -> None:
+    def __init__(self, spot_price, target_price, stop_price, atr,strike_price, days_to_experiation, risk_free_rate=5.5, volatility=80, number_of_steps = 10 ) -> None:
         self.target_price = target_price
         self.S = spot_price
         self.K = strike_price
@@ -36,18 +36,19 @@ class OptionData:
     def getOptionPrices(self):
         spotPriceDf = self.getSpotPrice()
         print(spotPriceDf)
-        optionPriceDf = pd.DataFrame(columns=['percentage', 'price','call', 'put', 'call pct change', 'put pct change'])
+        optionPriceDf = pd.DataFrame(columns=['price pct', 'price','call', 'put', 'call pct', 'put pct'])
         spotOptionCalculator = OptionCalculator(self.S, self.K, self.T, self.r, self.sigma)
+        print("SKTr params are:  ",self.S, self.K, self.T, self.r, self.sigma)
         spotCallPrice = spotOptionCalculator.bs_call()
         spotPutPrice = spotOptionCalculator.bs_put()
-        optionPriceDf = optionPriceDf.append({'percentage':round(self.current_pct,2), 'price':round(self.S,2), 'call': round(spotCallPrice,2), 'put':round(spotPutPrice,2), 'call pct change':0, 'put pct change':0}, ignore_index=True)
+        optionPriceDf = optionPriceDf.append({'price pct':round(self.current_pct,2), 'price':round(self.S,2), 'call': round(spotCallPrice,2), 'put':round(spotPutPrice,2), 'call pct':0, 'put pct':0}, ignore_index=True)
         for (S,P) in spotPriceDf.values:
             optionCalculator = OptionCalculator(S, self.K, self.T, self.r, self.sigma)
             callPrice = optionCalculator.bs_call()
             putPrice = optionCalculator.bs_put()
             callPctChange = (callPrice - spotCallPrice)/spotCallPrice * 100
             putPctChange = (putPrice - spotPutPrice) / spotPutPrice * 100
-            optionPriceDf = optionPriceDf.append({'percentage':round(P,2), 'price':round(S,2), 'call': round(callPrice,2), 'put': round(putPrice,2), 'call pct change':round(callPctChange,2), 'put pct change':round(putPctChange,2)}, ignore_index= True)
+            optionPriceDf = optionPriceDf.append({'price pct':round(P,2), 'price':round(S,2), 'call': round(callPrice,2), 'put': round(putPrice,2), 'call pct':round(callPctChange,2), 'put pct':round(putPctChange,2)}, ignore_index= True)
         return optionPriceDf
 
 if __name__ == "__main__":
